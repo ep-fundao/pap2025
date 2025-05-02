@@ -220,12 +220,12 @@ body {
 }
 
 ::-moz-selection {
-  background: rgb(255, 205.4336734694, 110);
+  background: rgb(105, 191, 109);
   color: #fff;
 }
 
 ::selection {
-  background: rgb(255, 205.4336734694, 110);
+  background: rgb(105, 191, 109);
   color: #fff;
 }
 
@@ -973,4 +973,5 @@ link:focus,
 .filter-controls li:hover {
   color: #69BF6D;
 }
+
 /*# sourceMappingURL=style.css.map */
