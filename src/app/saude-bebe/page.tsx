@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,8 +40,99 @@ type Milestone = {
   social: string[]
 }
 
+// Dados de doenças comuns
+const diseases: Disease[] = [
+  {
+    id: "d1",
+    name: "Gripe (Influenza)",
+    symptoms: ["Febre alta", "Tosse", "Dor de garganta", "Congestão nasal", "Dores musculares", "Fadiga"],
+    causes: "Vírus influenza, altamente contagioso e transmitido por gotículas respiratórias",
+    prevention: [
+      "Vacinação anual contra a gripe",
+      "Lavagem frequente das mãos",
+      "Evitar contato com pessoas doentes",
+      "Manter ambientes ventilados",
+    ],
+    treatment: "Repouso, hidratação adequada, medicamentos para febre e dor conforme orientação médica",
+    whenToSeeDoctor: "Se a febre for muito alta, persistir por mais de 3 dias, ou se houver dificuldade respiratória",
+    ageGroup: "Todas as idades, mais grave em bebês menores de 6 meses",
+  },
+  // ... (rest of the diseases)
+];
+
+// Dados de vacinas
+const vaccines: Vaccine[] = [
+  {
+    id: "v1",
+    name: "BCG",
+    age: "Ao nascer",
+    description: "Protege contra formas graves de tuberculose",
+    doses: "Dose única",
+    importance: "Essencial para prevenir formas graves de tuberculose, especialmente em crianças",
+    sideEffects: "Pequena úlcera no local da aplicação que cicatriza em algumas semanas",
+  },
+  // ... (rest of the vaccines)
+];
+
+// Dados de marcos de desenvolvimento
+const milestones: Milestone[] = [
+  {
+    id: "m1",
+    age: "1 mês",
+    physical: [
+      "Levanta brevemente a cabeça quando está de bruços",
+      "Movimentos reflexos",
+      "Fecha a mão quando algo toca a palma",
+    ],
+    cognitive: ["Foca objetos próximos", "Presta atenção a rostos", "Reconhece alguns sons"],
+    social: ["Acalma-se quando pego no colo", "Começa a sorrir socialmente", "Reconhece a voz dos pais"],
+  },
+  // ... (rest of the milestones)
+];
+
+// Primeiro, vamos adicionar uma função de pesquisa global
+const searchAllContent = (query: string) => {
+  // Filtrar vacinas
+  const vaccineResults = vaccines.filter(
+    (vaccine) =>
+      vaccine.name.toLowerCase().includes(query.toLowerCase()) ||
+      vaccine.description.toLowerCase().includes(query.toLowerCase()) ||
+      vaccine.age.toLowerCase().includes(query.toLowerCase()) ||
+      vaccine.importance.toLowerCase().includes(query.toLowerCase())
+  )
+
+  // Filtrar doenças
+  const diseaseResults = diseases.filter(
+    (disease) =>
+      disease.name.toLowerCase().includes(query.toLowerCase()) ||
+      disease.symptoms.some(symptom => symptom.toLowerCase().includes(query.toLowerCase())) ||
+      disease.causes.toLowerCase().includes(query.toLowerCase()) ||
+      disease.prevention.some(prev => prev.toLowerCase().includes(query.toLowerCase())) ||
+      disease.treatment.toLowerCase().includes(query.toLowerCase()) ||
+      disease.ageGroup.toLowerCase().includes(query.toLowerCase())
+  )
+
+  // Filtrar marcos de desenvolvimento
+  const milestoneResults = milestones.filter(
+    (milestone) =>
+      milestone.age.toLowerCase().includes(query.toLowerCase()) ||
+      milestone.physical.some(item => item.toLowerCase().includes(query.toLowerCase())) ||
+      milestone.cognitive.some(item => item.toLowerCase().includes(query.toLowerCase())) ||
+      milestone.social.some(item => item.toLowerCase().includes(query.toLowerCase()))
+  )
+
+  return {
+    vaccineResults,
+    diseaseResults,
+    milestoneResults,
+    hasResults: vaccineResults.length > 0 || diseaseResults.length > 0 || milestoneResults.length > 0
+  }
+}
+
+// Modifique o componente principal para usar a nova função de pesquisa
 export default function SaudeBebePage() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [activeTab, setActiveTab] = useState("vacinas")
 
   // Dados de vacinas
   const vaccines: Vaccine[] = [
@@ -353,20 +444,24 @@ export default function SaudeBebePage() {
     },
   ]
 
-  // Filtrar vacinas com base na pesquisa
-  const filteredVaccines = vaccines.filter(
-    (vaccine) =>
-      vaccine.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vaccine.age.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  // Buscar resultados quando o usuário digita
+  const searchResults = useMemo(() => {
+    return searchQuery ? searchAllContent(searchQuery) : null
+  }, [searchQuery])
 
-  // Filtrar doenças com base na pesquisa
-  const filteredDiseases = diseases.filter(
-    (disease) =>
-      disease.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      disease.ageGroup.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  // Função para destacar o texto encontrado
+  const highlightText = (text: string) => {
+    if (!searchQuery) return text
+    
+    const parts = text.split(new RegExp(`(${searchQuery})`, 'gi'))
+    return parts.map((part, i) => 
+      part.toLowerCase() === searchQuery.toLowerCase() 
+        ? <span key={i} className="bg-yellow-200">{part}</span>
+        : part
+    )
+  }
 
+  // Modificar o componente de pesquisa
   return (
     <div className="flex flex-col min-h-screen">
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b">
@@ -435,7 +530,89 @@ export default function SaudeBebePage() {
             </Card>
           </div>
 
-          <Tabs defaultValue="vacinas" className="w-full">
+          {searchQuery && searchResults && (
+            <div className="mb-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Resultados da pesquisa para "{searchQuery}"</CardTitle>
+                  <CardDescription>
+                    {searchResults.hasResults 
+                      ? `Encontrados resultados em ${[
+                          searchResults.vaccineResults.length && 'vacinas',
+                          searchResults.diseaseResults.length && 'doenças',
+                          searchResults.milestoneResults.length && 'desenvolvimento'
+                        ].filter(Boolean).join(', ')}`
+                      : 'Nenhum resultado encontrado'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Resultados de Vacinas */}
+                    {searchResults.vaccineResults.length > 0 && (
+                      <div>
+                        <h3 className="font-medium mb-2">Vacinas</h3>
+                        {searchResults.vaccineResults.map(vaccine => (
+                          <Button
+                            key={vaccine.id}
+                            variant="ghost"
+                            className="w-full text-left justify-start"
+                            onClick={() => {
+                              setActiveTab("vacinas")
+                              // Adicione lógica para rolar até a vacina específica
+                            }}
+                          >
+                            {highlightText(vaccine.name)} - {highlightText(vaccine.age)}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Resultados de Doenças */}
+                    {searchResults.diseaseResults.length > 0 && (
+                      <div>
+                        <h3 className="font-medium mb-2">Doenças</h3>
+                        {searchResults.diseaseResults.map(disease => (
+                          <Button
+                            key={disease.id}
+                            variant="ghost"
+                            className="w-full text-left justify-start"
+                            onClick={() => {
+                              setActiveTab("doencas")
+                              // Adicione lógica para rolar até a doença específica
+                            }}
+                          >
+                            {highlightText(disease.name)} - {highlightText(disease.ageGroup)}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Resultados de Desenvolvimento */}
+                    {searchResults.milestoneResults.length > 0 && (
+                      <div>
+                        <h3 className="font-medium mb-2">Marcos de Desenvolvimento</h3>
+                        {searchResults.milestoneResults.map(milestone => (
+                          <Button
+                            key={milestone.id}
+                            variant="ghost"
+                            className="w-full text-left justify-start"
+                            onClick={() => {
+                              setActiveTab("desenvolvimento")
+                              // Adicione lógica para rolar até o marco específico
+                            }}
+                          >
+                            {highlightText(milestone.age)}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-3 mb-4">
               <TabsTrigger value="vacinas">Vacinas</TabsTrigger>
               <TabsTrigger value="doencas">Doenças Comuns</TabsTrigger>
@@ -525,15 +702,14 @@ export default function SaudeBebePage() {
                     <div className="space-y-4">
                       <h3 className="font-medium text-lg">Detalhes das Vacinas</h3>
 
-                      {searchQuery && filteredVaccines.length === 0 ? (
+                      {searchQuery && searchResults && searchResults.vaccineResults.length === 0 ? (
                         <div className="text-center py-8 text-gray-500">
                           <p>Nenhuma vacina encontrada para "{searchQuery}"</p>
                         </div>
                       ) : (
                         <Accordion type="single" collapsible className="w-full">
-                          {(searchQuery ? filteredVaccines : vaccines).map((vaccine) => (
-                            <AccordionItem key={vaccine.id} value={vaccine.id}>
-                              <AccordionTrigger>
+                          {(searchQuery && searchResults ? searchResults.vaccineResults : vaccines).map((vaccine) => (
+                            <AccordionItem key={vaccine.id} value={vaccine.id}>                              <AccordionTrigger>
                                 <div className="flex items-center gap-2">
                                   <ShieldIcon className="w-4 h-4 text-blue-500" />
                                   <span>{vaccine.name}</span>
@@ -596,13 +772,13 @@ export default function SaudeBebePage() {
                       </div>
                     </div>
 
-                    {searchQuery && filteredDiseases.length === 0 ? (
+                    {searchQuery && searchResults && searchResults.diseaseResults.length === 0 ? (
                       <div className="text-center py-8 text-gray-500">
                         <p>Nenhuma doença encontrada para "{searchQuery}"</p>
                       </div>
                     ) : (
                       <Accordion type="single" collapsible className="w-full">
-                        {(searchQuery ? filteredDiseases : diseases).map((disease) => (
+                        {(searchQuery && searchResults ? searchResults.diseaseResults : diseases).map((disease) => (
                           <AccordionItem key={disease.id} value={disease.id}>
                             <AccordionTrigger>
                               <div className="flex items-center gap-2">

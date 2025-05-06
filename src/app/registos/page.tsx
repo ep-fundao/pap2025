@@ -99,7 +99,7 @@ export default function RegistosPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen  bg-gray-50">
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b">
         <div className="container flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-2">

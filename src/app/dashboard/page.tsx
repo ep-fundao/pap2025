@@ -267,8 +267,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b">
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header com fundo suave e blur */}
+      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b shadow-sm">
         <div className="container flex items-center justify-between h-16 px-4">
           <Link href="/dashboard" className="flex items-center gap-2">
             <HeartPulseIcon className="w-6 h-6 text-pink-500" />
@@ -395,11 +396,12 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {/* Main content com cards em fundo branco para contraste */}
       <main className="flex-1 container px-4 py-6">
         <div className="flex flex-col gap-6">
           {/* Greeting and Progress */}
           <div className="grid gap-4 md:grid-cols-2">
-            <Card>
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">Olá, {userName}!</CardTitle>
                 <CardDescription>Semana {user?.pregnancyWeek || 24} de gravidez</CardDescription>
@@ -411,7 +413,8 @@ export default function Dashboard() {
                       <span>Progresso da gravidez</span>
                       <span className="font-medium">60%</span>
                     </div>
-                    <Progress value={60} className="h-2 bg-pink-100" />
+                    <Progress value={60} className="h-2 bg-pink-100 [&>div]:bg-pink-600" />
+
                   </div>
                   <div className="flex justify-between text-sm text-gray-500">
                     <span>Semana 1</span>
@@ -421,7 +424,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">Próxima consulta</CardTitle>
                 <CardDescription>Consulta pré-natal</CardDescription>
@@ -447,7 +450,7 @@ export default function Dashboard() {
           </div>
 
           {/* Baby Development */}
-          <Card>
+          <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-xl">Desenvolvimento do bebé</CardTitle>
               <CardDescription>
@@ -490,7 +493,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Saúde do Bebé Card */}
-          <Card>
+          <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-xl flex items-center gap-2">
                 <BabyIcon className="w-5 h-5 text-pink-600" />
@@ -547,7 +550,7 @@ export default function Dashboard() {
               <TabsTrigger value="exercicios">Exercícios</TabsTrigger>
             </TabsList>
             <TabsContent value="saude" className="space-y-4">
-              <Card>
+              <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Dicas para esta semana</CardTitle>
                 </CardHeader>
@@ -580,7 +583,7 @@ export default function Dashboard() {
               </Card>
             </TabsContent>
             <TabsContent value="alimentacao" className="space-y-4">
-              <Card>
+              <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Alimentação recomendada</CardTitle>
                 </CardHeader>
@@ -611,7 +614,7 @@ export default function Dashboard() {
               </Card>
             </TabsContent>
             <TabsContent value="exercicios" className="space-y-4">
-              <Card>
+              <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Exercícios recomendados</CardTitle>
                 </CardHeader>
@@ -645,7 +648,8 @@ export default function Dashboard() {
         </div>
       </main>
 
-      <div className="sticky bottom-0 border-t bg-white">
+      {/* Footer com fundo suave */}
+      <div className="sticky bottom-0 border-t bg-white/80 backdrop-blur-md">
         <div className="container">
           <div className="grid grid-cols-4 py-2">
             <Link href="/dashboard" className="flex flex-col items-center justify-center py-1 text-pink-700">
@@ -670,8 +674,8 @@ export default function Dashboard() {
 
       {/* Dialog para detalhes da consulta */}
       <Dialog open={isAppointmentDialogOpen} onOpenChange={setIsAppointmentDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-md bg-white border rounded-lg shadow-lg">
+          <DialogHeader className="bg-pink-50 p-4 rounded-t-lg">
             <DialogTitle className="flex items-center gap-2">
               <CalendarDaysIcon className="w-5 h-5 text-pink-600" />
               Detalhes da Consulta
@@ -680,7 +684,7 @@ export default function Dashboard() {
           </DialogHeader>
 
           {selectedAppointment && (
-            <div className="space-y-4">
+            <div className="space-y-4 p-4 bg-white">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-lg">{selectedAppointment.title}</h3>
                 {getStatusBadge(selectedAppointment.status)}
@@ -730,13 +734,9 @@ export default function Dashboard() {
             </div>
           )}
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => setIsAppointmentDialogOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 p-4 bg-gray-50 rounded-b-lg">
+            <Button variant="outline" className=" flex-1 bg-pink-600 hover:bg-pink-700" onClick={() => setIsAppointmentDialogOpen(false)}>
               Fechar
-            </Button>
-            <Button className="flex-1 bg-pink-600 hover:bg-pink-700">
-              <CalendarIcon className="w-4 h-4 mr-2" />
-              Reagendar
             </Button>
           </DialogFooter>
         </DialogContent>

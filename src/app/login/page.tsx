@@ -1,38 +1,25 @@
-"use client"
+'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useUser } from "@auth0/nextjs-auth0"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { HeartPulseIcon, ArrowLeftIcon, Loader2Icon, LockIcon, MailIcon } from "lucide-react"
+import { HeartPulseIcon, ArrowLeftIcon, Loader2Icon } from "lucide-react"
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
   const [isAuth0Loading, setIsAuth0Loading] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const { user } = useUser()
+  const { user, isLoading } = useUser()
 
-  // Redireciona se já estiver autenticado
-  if (typeof window !== "undefined" && user) {
-    window.location.href = "/dashboard"
-    return null
-  }
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Redireciona para o login do Auth0
-    window.location.href = "/api/auth/login"
-  }
+  useEffect(() => {
+    if (user) {
+      window.location.href = "/dashboard"
+    }
+  }, [user])
 
   const handleAuth0Login = () => {
     setIsAuth0Loading(true)
-    // Redireciona para o login do Auth0
     window.location.href = "/api/auth/login"
   }
 
@@ -66,63 +53,23 @@ export default function LoginPage() {
               />
             </div>
             <CardTitle className="text-xl text-center">Entrar na conta</CardTitle>
-            <CardDescription className="text-center">Introduza os seus dados para aceder à sua conta</CardDescription>
+            <CardDescription className="text-center">Clique abaixo para entrar com sua conta</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    Email
-                  </Label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                      <MailIcon className="h-4 w-4" />
-                    </div>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="exemplo@email.com"
-                      className="pl-10"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password" className="text-sm font-medium">
-                      Palavra-passe
-                    </Label>
-                    <Link href="/recuperar-password" className="text-xs text-pink-700 hover:underline">
-                      Esqueceu a palavra-passe?
-                    </Link>
-                  </div>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                      <LockIcon className="h-4 w-4" />
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Introduza a sua palavra-passe"
-                      className="pl-10"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />A entrar...
-                    </>
-                  ) : (
-                    "Entrar"
-                  )}
-                </Button>
-              </div>
-            </form>
+            <Button
+              onClick={handleAuth0Login}
+              className="w-full bg-pink-600 hover:bg-pink-700"
+              disabled={isAuth0Loading || isLoading}
+            >
+              {isAuth0Loading || isLoading ? (
+                <>
+                  <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />
+                  A entrar...
+                </>
+              ) : (
+                "Entrar com Auth0"
+              )}
+            </Button>
           </CardContent>
           <CardFooter className="flex flex-col">
             <div className="text-center mt-2">

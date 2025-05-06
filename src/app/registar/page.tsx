@@ -2,47 +2,123 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { HeartPulseIcon, ArrowLeftIcon, Loader2Icon, CheckIcon } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { HeartPulseIcon, ArrowLeftIcon, Loader2Icon } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Separator } from "@/components/ui/separator"
 
-export default function RegistarPage() {
-  const [step, setStep] = useState(1)
+type User = {
+  name: string
+  email: string
+  type: string
+  avatar?: string
+  phone?: string
+  dueDate?: string
+  pregnancyWeek?: number
+  address?: string
+  city?: string
+  postalCode?: string
+  doctor?: string
+  hospital?: string
+  bloodType?: string
+  allergies?: string
+  medicalNotes?: string
+}
+
+export default function PerfilPage() {
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
-  const [userType, setUserType] = useState("cuidador")
+  const [saving, setSaving] = useState(false)
+  const [userInitials, setUserInitials] = useState("")
+  const [formData, setFormData] = useState<User | null>(null)
 
-  const handleNextStep = () => {
-    setStep(step + 1)
-  }
-
-  const handlePrevStep = () => {
-    setStep(step - 1)
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  // Carregar dados do usuário
+  useEffect(() => {
     setLoading(true)
+    const storedUser = localStorage.getItem("clicktocare_user")
 
-    // Simulate form submission
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser)
+        
+        // Formatar os dados para exibição
+        const formattedData = {
+          ...userData,
+          // Formatar a data prevista para exibição amigável
+          dueDate: userData.dueDate ? new Date(userData.dueDate).toLocaleDateString('pt-BR') : '',
+          // Adicionar outros campos formatados conforme necessário
+        }
+
+        setUser(formattedData)
+        setFormData(formattedData)
+
+        // Gerar iniciais para o avatar
+        const initials = userData.name
+          .split(" ")
+          .map((n: string) => n[0])
+          .join("")
+          .toUpperCase()
+          .substring(0, 2)
+        setUserInitials(initials)
+      } catch (e) {
+        console.error("Erro ao carregar dados do usuário:", e)
+      }
+    }
+    setLoading(false)
+  }, [])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => (prev ? { ...prev, [name]: value } : null))
+  }
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => (prev ? { ...prev, [name]: value } : null))
+  }
+
+  const handleSave = () => {
+    setSaving(true)
+
+    if (formData) {
+      // Mesclar os dados existentes com as atualizações
+      const existingData = JSON.parse(localStorage.getItem("clicktocare_user") || "{}")
+      const updatedData = {
+        ...existingData,
+        ...formData,
+        // Adicionar campos que podem ter sido atualizados
+        lastUpdated: new Date().toISOString(),
+      }
+
+      localStorage.setItem("clicktocare_user", JSON.stringify(updatedData))
+      setUser(updatedData)
+    }
+
     setTimeout(() => {
-      setLoading(false)
-      // Redirect to dashboard after successful registration
-      window.location.href = "/dashboard"
-    }, 2000)
+      setSaving(false)
+    }, 1500)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2Icon className="w-8 h-8 animate-spin text-pink-600" />
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="bg-white border-b">
+      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b">
         <div className="container flex items-center h-16 px-4">
-          <Link href="/" className="mr-auto">
+          <Link href="/dashboard" className="mr-auto">
             <Button variant="ghost" size="icon" className="rounded-full">
               <ArrowLeftIcon className="w-5 h-5" />
             </Button>
@@ -55,276 +131,269 @@ export default function RegistarPage() {
         </div>
       </header>
 
-      <main className="flex-1 container max-w-md mx-auto px-4 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl text-center">Criar conta</CardTitle>
-            <CardDescription className="text-center">
-              {step === 1 && "Escolha o seu perfil"}
-              {step === 2 && "Informações pessoais"}
-              {step === 3 && (userType === "cuidador" ? "Informações da gravidez" : "Informações profissionais")}
-              {step === 4 && "Preferências"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit}>
-              {step === 1 && (
-                <div className="space-y-6">
-                  <div className="flex justify-center mb-4">
-                    <Image
-                      src="/logo.jpg"
-                      alt="Clicktocare Logo"
-                      width={120}
-                      height={120}
-                      className="rounded-full bg-pink-50 p-4"
+      <main className="flex-1 container px-4 py-6 max-w-4xl">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+            <Avatar className="w-20 h-20 border-2 border-pink-100">
+              <AvatarImage src={user?.avatar || ""} alt={user?.name} />
+              <AvatarFallback className="bg-pink-100 text-pink-700 text-xl">{userInitials}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-2xl font-bold">{user?.name}</h1>
+              <p className="text-gray-500">
+                {user?.type === "cuidador" ? "Perfil de Cuidador" : "Perfil de Profissional"}
+              </p>
+            </div>
+          </div>
+
+          <Tabs defaultValue="personal" className="w-full">
+            <TabsList className="grid grid-cols-3 mb-4 bg-white rounded-lg shadow-sm">
+              <TabsTrigger value="personal">Dados Pessoais</TabsTrigger>
+              <TabsTrigger value="medical" >Dados Médicos</TabsTrigger>
+              <TabsTrigger value="settings">Configurações</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="personal" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Informações Pessoais</CardTitle>
+                  <CardDescription>Atualize os seus dados pessoais</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Nome Completo</Label>
+                      <Input id="name" name="name" value={formData?.name || ""} onChange={handleInputChange} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData?.email || ""}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Telefone</Label>
+                      <Input id="phone" name="phone" value={formData?.phone || ""} onChange={handleInputChange} />
+                    </div>
+                    {formData?.type === "cuidador" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="dueDate">Data Prevista para o Parto</Label>
+                        <Input
+                          id="dueDate"
+                          name="dueDate"
+                          value={formData?.dueDate || ""}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <Label>Morada</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="address">Rua</Label>
+                        <Input
+                          id="address"
+                          name="address"
+                          value={formData?.address || ""}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="city">Cidade</Label>
+                        <Input id="city" name="city" value={formData?.city || ""} onChange={handleInputChange} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="postalCode">Código Postal</Label>
+                        <Input
+                          id="postalCode"
+                          name="postalCode"
+                          value={formData?.postalCode || ""}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="medical" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Informações Médicas</CardTitle>
+                  <CardDescription>Atualize os seus dados médicos</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {formData?.type === "cuidador" && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="pregnancyWeek">Semana de Gravidez</Label>
+                          <Input
+                            id="pregnancyWeek"
+                            name="pregnancyWeek"
+                            type="number"
+                            value={formData?.pregnancyWeek || ""}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="doctor">Médico Obstetra</Label>
+                          <Input
+                            id="doctor"
+                            name="doctor"
+                            value={formData?.doctor || ""}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="hospital">Hospital/Maternidade</Label>
+                          <Input
+                            id="hospital"
+                            name="hospital"
+                            value={formData?.hospital || ""}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </>
+                    )}
+                    <div className="space-y-2">
+                      <Label htmlFor="bloodType">Tipo Sanguíneo</Label>
+                      <Select
+                        value={formData?.bloodType || ""}
+                        onValueChange={(value) => handleSelectChange("bloodType", value)}
+                      >
+                        <SelectTrigger id="bloodType">
+                          <SelectValue placeholder="Selecione o tipo sanguíneo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A+">A+</SelectItem>
+                          <SelectItem value="A-">A-</SelectItem>
+                          <SelectItem value="B+">B+</SelectItem>
+                          <SelectItem value="B-">B-</SelectItem>
+                          <SelectItem value="AB+">AB+</SelectItem>
+                          <SelectItem value="AB-">AB-</SelectItem>
+                          <SelectItem value="O+">O+</SelectItem>
+                          <SelectItem value="O-">O-</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <Label htmlFor="allergies">Alergias</Label>
+                    <Textarea
+                      id="allergies"
+                      name="allergies"
+                      placeholder="Liste as suas alergias ou escreva 'Nenhuma'"
+                      value={formData?.allergies || ""}
+                      onChange={handleInputChange}
                     />
                   </div>
-                  <div className="space-y-3">
-                    <Label htmlFor="user-type">Selecione o seu perfil</Label>
-                    <RadioGroup
-                      defaultValue="cuidador"
-                      value={userType}
-                      onValueChange={setUserType}
-                      className="grid grid-cols-2 gap-4"
+
+                  <div className="space-y-2">
+                    <Label htmlFor="medicalNotes">Notas Médicas</Label>
+                    <Textarea
+                      id="medicalNotes"
+                      name="medicalNotes"
+                      placeholder="Informações médicas relevantes"
+                      value={formData?.medicalNotes || ""}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="settings" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Configurações da Conta</CardTitle>
+                  <CardDescription>Gerencie as configurações da sua conta</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="notifications">Notificações</Label>
+                    <Select
+                      defaultValue="all"
+                      onValueChange={(value) => handleSelectChange("notificationPreference", value)}
                     >
-                      <div
-                        className={`flex flex-col items-center space-y-2 border rounded-lg p-4 ${userType === "cuidador" ? "border-pink-500 bg-pink-50" : "border-gray-200"}`}
-                      >
-                        <RadioGroupItem value="cuidador" id="cuidador" className="sr-only" />
-                        <Label htmlFor="cuidador" className="flex flex-col items-center space-y-2 cursor-pointer">
-                          <div
-                            className={`p-2 rounded-full ${userType === "cuidador" ? "bg-pink-100" : "bg-gray-100"}`}
-                          >
-                            {userType === "cuidador" ? (
-                              <CheckIcon className="h-5 w-5 text-pink-600" />
-                            ) : (
-                              <HeartPulseIcon className="h-5 w-5 text-gray-500" />
-                            )}
-                          </div>
-                          <span className="font-medium">Cuidador</span>
-                          <span className="text-xs text-center text-gray-500">Para grávidas e familiares</span>
-                        </Label>
-                      </div>
-                      <div
-                        className={`flex flex-col items-center space-y-2 border rounded-lg p-4 ${userType === "profissional" ? "border-pink-500 bg-pink-50" : "border-gray-200"}`}
-                      >
-                        <RadioGroupItem value="profissional" id="profissional" className="sr-only" />
-                        <Label htmlFor="profissional" className="flex flex-col items-center space-y-2 cursor-pointer">
-                          <div
-                            className={`p-2 rounded-full ${userType === "profissional" ? "bg-pink-100" : "bg-gray-100"}`}
-                          >
-                            {userType === "profissional" ? (
-                              <CheckIcon className="h-5 w-5 text-pink-600" />
-                            ) : (
-                              <HeartPulseIcon className="h-5 w-5 text-gray-500" />
-                            )}
-                          </div>
-                          <span className="font-medium">Profissional</span>
-                          <span className="text-xs text-center text-gray-500">Para médicos e enfermeiros</span>
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome">Nome completo</Label>
-                    <Input id="nome" placeholder="Introduza o seu nome" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="exemplo@email.com" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Palavra-passe</Label>
-                    <Input id="password" type="password" placeholder="Crie uma palavra-passe" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="telefone">Número de telefone</Label>
-                    <Input id="telefone" type="tel" placeholder="+351 912 345 678" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="data-nascimento">Data de nascimento</Label>
-                    <Input id="data-nascimento" type="date" required />
-                  </div>
-                </div>
-              )}
-
-              {step === 3 && userType === "cuidador" && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="data-ultima-menstruacao">Data da última menstruação</Label>
-                    <Input id="data-ultima-menstruacao" type="date" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="data-prevista-parto">Data prevista para o parto (se souber)</Label>
-                    <Input id="data-prevista-parto" type="date" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="numero-gravidez">Número da gravidez</Label>
-                    <Select defaultValue="1">
-                      <SelectTrigger id="numero-gravidez">
-                        <SelectValue placeholder="Selecione uma opção" />
+                      <SelectTrigger id="notifications">
+                        <SelectValue placeholder="Preferências de notificações" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">Primeira gravidez</SelectItem>
-                        <SelectItem value="2">Segunda gravidez</SelectItem>
-                        <SelectItem value="3">Terceira gravidez</SelectItem>
-                        <SelectItem value="4">Quarta gravidez ou mais</SelectItem>
+                        <SelectItem value="all">Todas as notificações</SelectItem>
+                        <SelectItem value="important">Apenas importantes</SelectItem>
+                        <SelectItem value="appointments">Apenas consultas</SelectItem>
+                        <SelectItem value="none">Desativar notificações</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="medico">Nome do médico obstetra (se tiver)</Label>
-                    <Input id="medico" placeholder="Dr./Dra." />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="hospital">Hospital/Maternidade previsto</Label>
-                    <Input id="hospital" placeholder="Nome do hospital ou maternidade" />
-                  </div>
-                </div>
-              )}
 
-              {step === 3 && userType === "profissional" && (
-                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="especialidade">Especialidade</Label>
-                    <Select defaultValue="obstetra">
-                      <SelectTrigger id="especialidade">
-                        <SelectValue placeholder="Selecione uma opção" />
+                    <Label htmlFor="language">Idioma</Label>
+                    <Select defaultValue="pt">
+                      <SelectTrigger id="language">
+                        <SelectValue placeholder="Selecione o idioma" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="obstetra">Obstetrícia</SelectItem>
-                        <SelectItem value="ginecologista">Ginecologia</SelectItem>
-                        <SelectItem value="enfermeiro">Enfermagem</SelectItem>
-                        <SelectItem value="parteira">Parteira</SelectItem>
-                        <SelectItem value="outro">Outro</SelectItem>
+                        <SelectItem value="pt">Português</SelectItem>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Español</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="numero-cedula">Número de cédula profissional</Label>
-                    <Input id="numero-cedula" placeholder="Introduza o número" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="local-trabalho">Local de trabalho principal</Label>
-                    <Input id="local-trabalho" placeholder="Hospital, clínica ou consultório" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="anos-experiencia">Anos de experiência</Label>
-                    <Select defaultValue="5-10">
-                      <SelectTrigger id="anos-experiencia">
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0-5">Menos de 5 anos</SelectItem>
-                        <SelectItem value="5-10">5 a 10 anos</SelectItem>
-                        <SelectItem value="10-20">10 a 20 anos</SelectItem>
-                        <SelectItem value="20+">Mais de 20 anos</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
 
-              {step === 4 && (
-                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="notificacoes">Preferências de notificações</Label>
-                    <Select defaultValue="todas">
-                      <SelectTrigger id="notificacoes">
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todas">Todas as notificações</SelectItem>
-                        <SelectItem value="consultas">Apenas consultas</SelectItem>
-                        <SelectItem value="importantes">Apenas informações importantes</SelectItem>
-                        <SelectItem value="nenhuma">Nenhuma notificação</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {userType === "cuidador" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="frequencia">Frequência de dicas</Label>
-                      <Select defaultValue="diaria">
-                        <SelectTrigger id="frequencia">
-                          <SelectValue placeholder="Selecione uma opção" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="diaria">Diária</SelectItem>
-                          <SelectItem value="semanal">Semanal</SelectItem>
-                          <SelectItem value="mensal">Mensal</SelectItem>
-                          <SelectItem value="nenhuma">Não receber dicas</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <Label htmlFor="password">Alterar Palavra-passe</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input id="current-password" type="password" placeholder="Palavra-passe atual" />
+                      <Input id="new-password" type="password" placeholder="Nova palavra-passe" />
                     </div>
-                  )}
-                  {userType === "cuidador" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="interesses">Principais interesses</Label>
-                      <Select defaultValue="todos">
-                        <SelectTrigger id="interesses">
-                          <SelectValue placeholder="Selecione uma opção" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="todos">Todos os tópicos</SelectItem>
-                          <SelectItem value="saude">Saúde e bem-estar</SelectItem>
-                          <SelectItem value="alimentacao">Alimentação</SelectItem>
-                          <SelectItem value="desenvolvimento">Desenvolvimento do bebé</SelectItem>
-                          <SelectItem value="preparacao">Preparação para o parto</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  {userType === "profissional" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="disponibilidade">Disponibilidade para consultas</Label>
-                      <Select defaultValue="total">
-                        <SelectTrigger id="disponibilidade">
-                          <SelectValue placeholder="Selecione uma opção" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="total">Disponibilidade total</SelectItem>
-                          <SelectItem value="parcial">Disponibilidade parcial</SelectItem>
-                          <SelectItem value="limitada">Disponibilidade limitada</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                </div>
-              )}
-            </form>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-2">
-            {step < 4 ? (
-              <Button onClick={handleNextStep} className="w-full bg-pink-600 hover:bg-pink-700">
-                Continuar
-              </Button>
-            ) : (
-              <Button onClick={handleSubmit} className="w-full bg-pink-600 hover:bg-pink-700" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />A processar...
-                  </>
-                ) : (
-                  "Criar conta"
-                )}
-              </Button>
-            )}
+                  </div>
 
-            {step > 1 && (
-              <Button variant="ghost" onClick={handlePrevStep} className="w-full">
-                Voltar
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <h3 className="font-medium">Privacidade</h3>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="data-sharing" className="rounded text-pink-600" />
+                      <Label htmlFor="data-sharing">Permitir partilha de dados anónimos para melhorar o serviço</Label>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" asChild>
+              <Link href="/dashboard">Cancelar</Link>
+            </Button>
+            <Button className="bg-pink-600 hover:bg-pink-700" onClick={handleSave} disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />A guardar...
+                </>
+              ) : (
+                "Guardar Alterações"
+              )}
+            </Button>
+          </div>
+        </div>
       </main>
 
-      <footer className="bg-white border-t py-4">
+      <footer className="bg-white border-t py-4 mt-8">
         <div className="container text-center text-sm text-gray-500">
           <p>© 2025 Clicktocare. Todos os direitos reservados.</p>
         </div>

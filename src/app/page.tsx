@@ -122,11 +122,11 @@ export default function Home() {
                       <p className="text-sm">Olá Maria! Como posso ajudar-te hoje?</p>
                     </div>
                     <div className="bg-pink-100 p-3 rounded-lg rounded-tr-none max-w-[80%] ml-auto">
-                      <p className="text-sm">Tenho uma consulta marcada para quando?</p>
+                      <p className="text-sm">Depois da gravidez tenho estado insegura,não estou satisfeta comigo mesma?</p>
                     </div>
                     <div className="bg-gray-100 p-3 rounded-lg rounded-tl-none max-w-[80%]">
                       <p className="text-sm">
-                        A tua próxima consulta está marcada para 15 de Maio às 10:00 com a Dra. Sofia.
+                        Não te sintas assim,estarei aqui para te dar apoio e auxiliar no que precisares.
                       </p>
                     </div>
                   </div>
