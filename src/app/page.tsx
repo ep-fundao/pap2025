@@ -122,7 +122,7 @@ export default function Home() {
                       <p className="text-sm">Olá Maria! Como posso ajudar-te hoje?</p>
                     </div>
                     <div className="bg-pink-100 p-3 rounded-lg rounded-tr-none max-w-[80%] ml-auto">
-                      <p className="text-sm">Depois da gravidez tenho estado insegura,não estou satisfeta comigo mesma?</p>
+                      <p className="text-sm">Depois da gravidez tenho estado insegura,não estou satisfeta comigo mesma.</p>
                     </div>
                     <div className="bg-gray-100 p-3 rounded-lg rounded-tl-none max-w-[80%]">
                       <p className="text-sm">

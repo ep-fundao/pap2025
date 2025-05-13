@@ -267,15 +267,17 @@ export default function Dashboard() {
   }
 
   return (
+    // Modifique o layout principal
     <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Header com fundo suave e blur */}
+      {/* Header responsivo */}
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b shadow-sm">
-        <div className="container flex items-center justify-between h-16 px-4">
+        <div className="container flex items-center justify-between h-16 px-4 mx-auto">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <HeartPulseIcon className="w-6 h-6 text-pink-500" />
-            <span className="font-bold text-xl text-pink-700">Clicktocare</span>
+            <HeartPulseIcon className="w-6 h-6 md:w-7 md:h-7 text-pink-500" />
+            <span className="font-bold text-lg md:text-xl text-pink-700">Clicktocare</span>
           </Link>
-          <div className="flex items-center gap-2">
+          {/* Menu responsivo */}
+          <div className="flex items-center gap-2 md:gap-4">
             {/* Notificações - Agora com link direto */}
             <div className="flex items-center">
               <Link href="/notificacoes">
@@ -396,15 +398,18 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Main content com cards em fundo branco para contraste */}
-      <main className="flex-1 container px-4 py-6">
-        <div className="flex flex-col gap-6">
-          {/* Greeting and Progress */}
-          <div className="grid gap-4 md:grid-cols-2">
+      {/* Main content responsivo */}
+      <main className="flex-1 container px-4 py-4 md:py-6 mx-auto">
+        <div className="flex flex-col gap-4 md:gap-6">
+          {/* Cards em grid responsivo */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Card de Boas-vindas */}
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
-                <CardTitle className="text-xl">Olá, {userName}!</CardTitle>
-                <CardDescription>Semana {user?.pregnancyWeek || 24} de gravidez</CardDescription>
+                <CardTitle className="text-lg md:text-xl">Olá, {userName}!</CardTitle>
+                <CardDescription className="text-sm md:text-base">
+                  Semana {user?.pregnancyWeek || 24} de gravidez
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -424,6 +429,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
+            {/* Card da Próxima Consulta */}
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">Próxima consulta</CardTitle>
@@ -449,7 +455,7 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Baby Development */}
+          {/* Card de Desenvolvimento do Bebê */}
           <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-xl">Desenvolvimento do bebé</CardTitle>
@@ -458,8 +464,8 @@ export default function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 items-center">
-                <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div className="space-y-4 order-2 md:order-1">
                   <p className="text-sm text-gray-600">
                     Nesta semana, o seu bebé tem aproximadamente o tamanho de uma papaia. Os seus pulmões estão a
                     desenvolver-se e já consegue ouvir sons do exterior.
@@ -479,20 +485,20 @@ export default function Dashboard() {
                     <ChevronRightIcon className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
-                <div className="flex justify-center">
+                <div className="flex justify-center order-1 md:order-2">
                   <Image
                     src="/bebé.jpg"
-                    alt="Ilustração do bebé na semana 24"
+                    alt="Ilustração do bebé"
                     width={200}
                     height={200}
-                    className="rounded-lg"
+                    className="rounded-lg w-48 md:w-64 h-auto"
                   />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Saúde do Bebé Card */}
+          {/* Card de Saúde do Bebê */}
           <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-xl flex items-center gap-2">
@@ -507,7 +513,7 @@ export default function Dashboard() {
                   Acompanhe o desenvolvimento do seu bebé, calendário de vacinação e informações sobre cuidados após o
                   nascimento.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   <div className="bg-blue-50 p-4 rounded-lg flex flex-col items-center text-center">
                     <div className="bg-blue-100 p-2 rounded-full mb-2">
                       <ShieldIcon className="w-5 h-5 text-blue-600" />
@@ -542,12 +548,12 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Tabs for different sections */}
+          {/* Tabs responsivas */}
           <Tabs defaultValue="saude" className="w-full">
             <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="saude">Saúde</TabsTrigger>
-              <TabsTrigger value="alimentacao">Alimentação</TabsTrigger>
-              <TabsTrigger value="exercicios">Exercícios</TabsTrigger>
+              <TabsTrigger value="saude" className="text-sm md:text-base">Saúde</TabsTrigger>
+              <TabsTrigger value="alimentacao" className="text-sm md:text-base">Alimentação</TabsTrigger>
+              <TabsTrigger value="exercicios" className="text-sm md:text-base">Exercícios</TabsTrigger>
             </TabsList>
             <TabsContent value="saude" className="space-y-4">
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -648,13 +654,13 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Footer com fundo suave */}
+      {/* Footer responsivo */}
       <div className="sticky bottom-0 border-t bg-white/80 backdrop-blur-md">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="grid grid-cols-4 py-2">
             <Link href="/dashboard" className="flex flex-col items-center justify-center py-1 text-pink-700">
-              <HeartPulseIcon className="w-5 h-5" />
-              <span className="text-xs mt-1">Início</span>
+              <HeartPulseIcon className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="text-[10px] md:text-xs mt-1">Início</span>
             </Link>
             <Link href="/calendario" className="flex flex-col items-center justify-center py-1 text-gray-500">
               <CalendarIcon className="w-5 h-5" />
@@ -672,9 +678,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Dialog para detalhes da consulta */}
+      {/* Dialog responsivo */}
       <Dialog open={isAppointmentDialogOpen} onOpenChange={setIsAppointmentDialogOpen}>
-        <DialogContent className="sm:max-w-md bg-white border rounded-lg shadow-lg">
+        <DialogContent className="w-[95%] sm:max-w-md mx-auto">
           <DialogHeader className="bg-pink-50 p-4 rounded-t-lg">
             <DialogTitle className="flex items-center gap-2">
               <CalendarDaysIcon className="w-5 h-5 text-pink-600" />

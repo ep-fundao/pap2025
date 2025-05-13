@@ -1,7 +1,15 @@
-import { withAuth } from '@auth0/nextjs-auth0/middleware'
+import { withMiddlewareAuthRequired } from '@auth0/nextjs-auth0';
 
-export default withAuth()
+export default withMiddlewareAuthRequired({
+  returnTo: '/login'
+});
 
 export const config = {
-  matcher: ['/dashboard/:path*']
-}
+  matcher: [
+    '/dashboard',
+    '/perfil',
+    '/consultas',
+    '/registos',
+    // Adicione outras rotas protegidas aqui
+  ]
+};
