@@ -122,8 +122,7 @@ export default function Dashboard() {
           .toUpperCase()
           .substring(0, 2)
         setUserInitials(initials)
-      } catch (e) {
-        // Fallback para um nome padrão se houver erro
+      } catch {
         setUserName("Maria")
         setUserInitials("MS")
       }

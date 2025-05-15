@@ -534,7 +534,7 @@ export default function SaudeBebePage() {
             <div className="mb-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Resultados da pesquisa para "{searchQuery}"</CardTitle>
+                  <CardTitle>Resultados da pesquisa para &quot;{searchQuery}&quot;</CardTitle>
                   <CardDescription>
                     {searchResults.hasResults 
                       ? `Encontrados resultados em ${[
@@ -704,7 +704,7 @@ export default function SaudeBebePage() {
 
                       {searchQuery && searchResults && searchResults.vaccineResults.length === 0 ? (
                         <div className="text-center py-8 text-gray-500">
-                          <p>Nenhuma vacina encontrada para "{searchQuery}"</p>
+                          <p>Nenhuma vacina encontrada para &quot;{searchQuery}&quot;</p>
                         </div>
                       ) : (
                         <Accordion type="single" collapsible className="w-full">
@@ -774,7 +774,7 @@ export default function SaudeBebePage() {
 
                     {searchQuery && searchResults && searchResults.diseaseResults.length === 0 ? (
                       <div className="text-center py-8 text-gray-500">
-                        <p>Nenhuma doença encontrada para "{searchQuery}"</p>
+                        <p>Nenhuma doença encontrada para &quot;{searchQuery}&quot;</p>
                       </div>
                     ) : (
                       <Accordion type="single" collapsible className="w-full">
