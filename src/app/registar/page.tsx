@@ -25,7 +25,7 @@ export default function RegistarPage() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [userType, setUserType] = useState("cuidador")
-
+  
   const handleNextStep = () => {
     setStep(step + 1)
   }
@@ -73,6 +73,8 @@ export default function RegistarPage() {
       // Data de criação da conta
       createdAt: new Date().toISOString(),
     }
+      //confirmação dos dados
+    console.log("Dados guardados:", userData);
 
     // Salvar no localStorage
     localStorage.setItem('clicktocare_user', JSON.stringify(userData))

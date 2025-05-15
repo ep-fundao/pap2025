@@ -1,4 +1,4 @@
-import { withMiddlewareAuthRequired } from '@auth0/nextjs-auth0';
+/* import { withMiddlewareAuthRequired } from '@auth0/nextjs-auth0';
 
 export default withMiddlewareAuthRequired({
   returnTo: '/login'
@@ -12,4 +12,4 @@ export const config = {
     '/registos',
     // Adicione outras rotas protegidas aqui
   ]
-};
+}; */
