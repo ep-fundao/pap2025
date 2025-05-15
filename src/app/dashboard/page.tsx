@@ -216,7 +216,7 @@ export default function Dashboard() {
     title: "Consulta pré-natal",
     doctor: "Dra. Sofia Martins",
     specialty: "Obstetrícia",
-    date: "15 de Maio",
+    date: "25 de Maio",
     time: "10:00",
     location: "Hospital Santa Maria",
     address: "Av. Prof. Egas Moniz, 1649-035 Lisboa",
