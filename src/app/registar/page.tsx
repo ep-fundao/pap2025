@@ -15,10 +15,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 function calculatePregnancyWeek(lastPeriodDate: string): number {
   if (!lastPeriodDate) return 0;
+  
   const lastPeriod = new Date(lastPeriodDate);
   const today = new Date();
   const diffInDays = Math.floor((today.getTime() - lastPeriod.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.floor(diffInDays / 7);
+  const weeks = Math.floor(diffInDays / 7);
+  
+  // Retorna 0 se for negativo ou maior que 42 semanas
+  return weeks < 0 ? 0 : weeks > 42 ? 42 : weeks;
 }
 
 export default function RegistarPage() {
@@ -35,56 +39,74 @@ export default function RegistarPage() {
   }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    // Coletar todos os dados do formulário
-    const userData = {
-      name: (document.getElementById('nome') as HTMLInputElement)?.value,
-      email: (document.getElementById('email') as HTMLInputElement)?.value,
-      phone: (document.getElementById('telefone') as HTMLInputElement)?.value,
-      birthDate: (document.getElementById('data-nascimento') as HTMLInputElement)?.value,
-      type: userType,
-        pregnancyWeek: calculatePregnancyWeek((document.getElementById('data-ultima-menstruacao') as HTMLInputElement)?.value) || 0,
-      // Dados específicos para cuidador
-      ...(userType === "cuidador" && {
-        lastPeriodDate: (document.getElementById('data-ultima-menstruacao') as HTMLInputElement)?.value,
-        dueDate: (document.getElementById('data-prevista-parto') as HTMLInputElement)?.value,
-        pregnancyNumber: (document.getElementById('numero-gravidez') as HTMLSelectElement)?.value,
-        doctor: (document.getElementById('medico') as HTMLInputElement)?.value,
-        hospital: (document.getElementById('hospital') as HTMLInputElement)?.value,
-        pregnancyWeek: calculatePregnancyWeek((document.getElementById('data-ultima-menstruacao') as HTMLInputElement)?.value),
-        interests: (document.getElementById('interesses') as HTMLSelectElement)?.value,
-        tipsFrequency: (document.getElementById('frequencia') as HTMLSelectElement)?.value,
-      }),
-
-      // Dados específicos para profissional
-      ...(userType === "profissional" && {
-        specialty: (document.getElementById('especialidade') as HTMLSelectElement)?.value,
-        professionalId: (document.getElementById('numero-cedula') as HTMLInputElement)?.value,
-        workplace: (document.getElementById('local-trabalho') as HTMLInputElement)?.value,
-        experience: (document.getElementById('anos-experiencia') as HTMLSelectElement)?.value,
-        availability: (document.getElementById('disponibilidade') as HTMLSelectElement)?.value,
-      }),
-
-      // Preferências
-      notificationPreference: (document.getElementById('notificacoes') as HTMLSelectElement)?.value,
-      
-      // Data de criação da conta
-      createdAt: new Date().toISOString(),
+    e.preventDefault();
+    setLoading(true);
+  
+    try {
+      const lastPeriodDate = (document.getElementById('data-ultima-menstruacao') as HTMLInputElement)?.value;
+      const pregnancyWeek = calculatePregnancyWeek(lastPeriodDate);
+  
+      // Coletar todos os dados do formulário
+      const userData = {
+        name: (document.getElementById('nome') as HTMLInputElement)?.value,
+        email: (document.getElementById('email') as HTMLInputElement)?.value,
+        phone: (document.getElementById('telefone') as HTMLInputElement)?.value,
+        birthDate: (document.getElementById('data-nascimento') as HTMLInputElement)?.value,
+        type: userType,
+        
+        // Dados comuns para todos os usuários
+        notificationPreference: (document.getElementById('notificacoes') as HTMLSelectElement)?.value,
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
+  
+        // Dados específicos para cuidador
+        ...(userType === "cuidador" && {
+          lastPeriodDate,
+          dueDate: (document.getElementById('data-prevista-parto') as HTMLInputElement)?.value,
+          pregnancyNumber: (document.getElementById('numero-gravidez') as HTMLSelectElement)?.value,
+          doctor: (document.getElementById('medico') as HTMLInputElement)?.value,
+          hospital: (document.getElementById('hospital') as HTMLInputElement)?.value,
+          pregnancyWeek,
+          interests: (document.getElementById('interesses') as HTMLSelectElement)?.value,
+          tipsFrequency: (document.getElementById('frequencia') as HTMLSelectElement)?.value,
+        }),
+  
+        // Dados específicos para profissional
+        ...(userType === "profissional" && {
+          specialty: (document.getElementById('especialidade') as HTMLSelectElement)?.value,
+          professionalId: (document.getElementById('numero-cedula') as HTMLInputElement)?.value,
+          workplace: (document.getElementById('local-trabalho') as HTMLInputElement)?.value,
+          experience: (document.getElementById('anos-experiencia') as HTMLSelectElement)?.value,
+          availability: (document.getElementById('disponibilidade') as HTMLSelectElement)?.value,
+        }),
+      };
+  
+      // Validar dados obrigatórios
+      /* if (!userData.name || !userData.email) {
+        throw new Error('Por favor, preencha todos os campos obrigatórios');
+      } */
+  
+      // Salvar no localStorage
+      localStorage.setItem('clicktocare_user', JSON.stringify(userData));
+  
+      // Configurar um intervalo para atualizar as semanas de gravidez
+      if (userType === "cuidador" && lastPeriodDate) {
+        const updateInterval = 1000 * 60 * 60 * 24; // 24 horas
+        localStorage.setItem('pregnancy_update_interval', updateInterval.toString());
+      }
+  
+      // Simular delay e redirecionar
+      setTimeout(() => {
+        setLoading(false);
+        window.location.href = "/dashboard";
+      }, 1500);
+  
+    } catch (error) {
+      console.error('Erro ao salvar dados:', error);
+      setLoading(false);
+      // Aqui você pode adicionar uma notificação de erro para o usuário
     }
-      //confirmação dos dados
-    console.log("Dados guardados:", userData);
-
-    // Salvar no localStorage
-    localStorage.setItem('clicktocare_user', JSON.stringify(userData))
-
-    // Simular delay e redirecionar
-    setTimeout(() => {
-      setLoading(false)
-      window.location.href = "/dashboard"
-    }, 1500)
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-pink-50/50 to-white">
@@ -237,10 +259,10 @@ export default function RegistarPage() {
                     <div className="space-y-2">
                       <Label htmlFor="numero-gravidez">Número da gravidez</Label>
                       <Select defaultValue="1">
-                        <SelectTrigger id="numero-gravidez">
+                        <SelectTrigger id="numero-gravidez" className="bg-white">
                           <SelectValue placeholder="Selecione uma opção" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border rounded-md shadow-md">
                           <SelectItem value="1">Primeira gravidez</SelectItem>
                           <SelectItem value="2">Segunda gravidez</SelectItem>
                           <SelectItem value="3">Terceira gravidez</SelectItem>
@@ -264,10 +286,10 @@ export default function RegistarPage() {
                     <div className="space-y-2">
                       <Label htmlFor="especialidade">Especialidade</Label>
                       <Select defaultValue="obstetra">
-                        <SelectTrigger id="especialidade">
+                        <SelectTrigger id="especialidade" className="bg-white">
                           <SelectValue placeholder="Selecione uma opção" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border rounded-md shadow-md">
                           <SelectItem value="obstetra">Obstetrícia</SelectItem>
                           <SelectItem value="ginecologista">Ginecologia</SelectItem>
                           <SelectItem value="enfermeiro">Enfermagem</SelectItem>
@@ -287,10 +309,10 @@ export default function RegistarPage() {
                     <div className="space-y-2">
                       <Label htmlFor="anos-experiencia">Anos de experiência</Label>
                       <Select defaultValue="5-10">
-                        <SelectTrigger id="anos-experiencia">
+                        <SelectTrigger id="anos-experiencia" className="bg-white">
                           <SelectValue placeholder="Selecione uma opção" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border rounded-md shadow-md">
                           <SelectItem value="0-5">Menos de 5 anos</SelectItem>
                           <SelectItem value="5-10">5 a 10 anos</SelectItem>
                           <SelectItem value="10-20">10 a 20 anos</SelectItem>
@@ -306,10 +328,10 @@ export default function RegistarPage() {
                     <div className="space-y-2">
                       <Label htmlFor="notificacoes">Preferências de notificações</Label>
                       <Select defaultValue="todas">
-                        <SelectTrigger id="notificacoes">
+                        <SelectTrigger id="notificacoes" className="bg-white">
                           <SelectValue placeholder="Selecione uma opção" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border rounded-md shadow-md">
                           <SelectItem value="todas">Todas as notificações</SelectItem>
                           <SelectItem value="consultas">Apenas consultas</SelectItem>
                           <SelectItem value="importantes">Apenas informações importantes</SelectItem>
@@ -321,10 +343,10 @@ export default function RegistarPage() {
                       <div className="space-y-2">
                         <Label htmlFor="frequencia">Frequência de dicas</Label>
                         <Select defaultValue="diaria">
-                          <SelectTrigger id="frequencia">
+                          <SelectTrigger id="frequencia" className="bg-white">
                             <SelectValue placeholder="Selecione uma opção" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white border rounded-md shadow-md">
                             <SelectItem value="diaria">Diária</SelectItem>
                             <SelectItem value="semanal">Semanal</SelectItem>
                             <SelectItem value="mensal">Mensal</SelectItem>
@@ -337,10 +359,10 @@ export default function RegistarPage() {
                       <div className="space-y-2">
                         <Label htmlFor="interesses">Principais interesses</Label>
                         <Select defaultValue="todos">
-                          <SelectTrigger id="interesses">
-                            <SelectValue placeholder="Selecione uma opção" />
+                          <SelectTrigger id="interesses" className="bg-white">
+                            <SelectValue placeholder="Selecione uma opção"  />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white border rounded-md shadow-md">
                             <SelectItem value="todos">Todos os tópicos</SelectItem>
                             <SelectItem value="saude">Saúde e bem-estar</SelectItem>
                             <SelectItem value="alimentacao">Alimentação</SelectItem>
@@ -354,10 +376,10 @@ export default function RegistarPage() {
                       <div className="space-y-2">
                         <Label htmlFor="disponibilidade">Disponibilidade para consultas</Label>
                         <Select defaultValue="total">
-                          <SelectTrigger id="disponibilidade">
+                          <SelectTrigger id="disponibilidade" className="bg-white">
                             <SelectValue placeholder="Selecione uma opção" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white border rounded-md shadow-md">
                             <SelectItem value="total">Disponibilidade total</SelectItem>
                             <SelectItem value="parcial">Disponibilidade parcial</SelectItem>
                             <SelectItem value="limitada">Disponibilidade limitada</SelectItem>

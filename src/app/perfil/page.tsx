@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { HeartPulseIcon, ArrowLeftIcon, Loader2Icon } from "lucide-react"
+import { HeartPulseIcon, ArrowLeftIcon, Loader2Icon, LogOutIcon } from "lucide-react"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
@@ -87,6 +87,43 @@ export default function PerfilPage() {
     setLoading(false)
   }, [router])
 
+  // Função utilitária para calcular a semana da gravidez a partir da data do último período
+  function calculatePregnancyWeek(lastPeriodDate: string): number {
+    const lastPeriod = new Date(lastPeriodDate);
+    const now = new Date();
+    const diffInMs = now.getTime() - lastPeriod.getTime();
+    const diffInWeeks = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7));
+    return diffInWeeks > 0 ? diffInWeeks : 0;
+  }
+  
+    useEffect(() => {
+      const updatePregnancyWeek = () => {
+        const userData = localStorage.getItem('clicktocare_user');
+        if (userData) {
+          const user = JSON.parse(userData);
+          if (user.type === "cuidador" && user.lastPeriodDate) {
+            const updatedWeeks = calculatePregnancyWeek(user.lastPeriodDate);
+            const updatedUser = {
+              ...user,
+              pregnancyWeek: updatedWeeks,
+              lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem('clicktocare_user', JSON.stringify(updatedUser));
+          }
+        }
+      };
+    
+      // Atualizar na montagem do componente
+      updatePregnancyWeek();
+    
+      // Configurar intervalo de atualização
+      const interval = setInterval(() => {
+        updatePregnancyWeek();
+      }, 24 * 60 * 60 * 1000); // Atualiza diariamente
+    
+      return () => clearInterval(interval);
+    }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => (prev ? { ...prev, [name]: value } : null))
@@ -110,6 +147,12 @@ export default function PerfilPage() {
     setTimeout(() => setSaving(false), 1000)
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("clicktocare_user")
+    toast.success("Sessão terminada com sucesso")
+    router.push("/")
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -121,7 +164,7 @@ export default function PerfilPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col">
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur border-b shadow-sm">
-        <div className="container max-w-7xl flex items-center justify-between h-20 px-6">
+        <div className="container max-w-7xl flex items-center h-20 px-6">
           <Link href="/dashboard">
             <Button variant="ghost" size="icon" className="rounded-full hover:bg-pink-50">
               <ArrowLeftIcon className="w-5 h-5" />
@@ -131,6 +174,16 @@ export default function PerfilPage() {
             <HeartPulseIcon className="w-7 h-7 text-pink-500" />
             <span className="font-bold text-2xl text-pink-700">Clicktocare</span>
           </div>
+          {/* Adicione o botão de logout */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-auto rounded-full hover:bg-pink-50"
+            onClick={handleLogout}
+            title="Terminar sessão"
+          >
+            <LogOutIcon className="w-5 h-5 text-gray-600 hover:text-pink-600" />
+          </Button>
         </div>
       </header>
 
@@ -148,6 +201,13 @@ export default function PerfilPage() {
               </p>
             </div>
           </div>
+
+          {user?.type === "cuidador" && user?.pregnancyWeek && (
+            <div className="bg-pink-50 rounded-lg p-4 mt-4">
+              <h3 className="font-medium text-pink-700">Semana da Gravidez</h3>
+              <p className="text-2xl font-bold text-pink-600">{user.pregnancyWeek}ª semana</p>
+            </div>
+          )}
 
           <Tabs defaultValue="personal" className="w-full">
             <TabsList className="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-lg mb-6">
