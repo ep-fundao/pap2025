@@ -11,6 +11,12 @@ const openai = new OpenAI({
 });
 
 export async function POST(req) {
+  if (!process.env.OPENROUTER_API_KEY) {
+    return Response.json({ 
+      error: 'API key não configurada' 
+    }, { status: 500 });
+  }
+  
   try {
     const { messages } = await req.json();
 
