@@ -1,3 +1,5 @@
+
+
 # 🤱 ClickToCare – Cuidando de Vidas desde o Início
 
 ClickToCare é uma plataforma web responsiva com foco **mobile-first**, desenhada para acompanhar a jornada da mulher grávida e o desenvolvimento da criança desde o primeiro dia da gestação.
@@ -146,3 +148,8 @@ npm install
 
 # Iniciar o servidor de desenvolvimento
 npm run dev
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT.  
+Consulte o ficheiro [LICENSE](./LICENSE) para mais informações.
