@@ -82,10 +82,9 @@ export default function CalendarioPage() {
 
     // Adicionar os dias do mês
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day)
-      const hasAppointment = appointments.some(
-        (app) => app.date.getDate() === day && app.date.getMonth() === month && app.date.getFullYear() === year,
-      )
+  const hasAppointment = appointments.some(
+    (app) => app.date.getDate() === day && app.date.getMonth() === month && app.date.getFullYear() === year,
+  )
 
       days.push(
         <div

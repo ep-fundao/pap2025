@@ -119,7 +119,7 @@ export default function AssistentePage() {
               >
                 <ReactMarkdown
                   components={{
-                    p: ({ node, ...props }) => <p {...props} className="text-sm prose prose-pink" />,
+                    p: ({ ...props }) => <p {...props} className="text-sm prose prose-pink" />,
                   }}
                 >
                   {message.content}
