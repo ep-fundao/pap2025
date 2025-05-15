@@ -16,8 +16,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Hotel Management App',
-  description: 'Discover the best hotel rooms',
+  title: 'My Association',
+  description: 'solução de software para gestão de associativismo',
 };
 
 export default function RootLayout({

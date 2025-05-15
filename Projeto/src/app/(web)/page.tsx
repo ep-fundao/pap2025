@@ -13,7 +13,7 @@ const Home = async () => {
       <HeroSection />
       <PageSearch />
       <FeaturedRoom featuredAssociacao={featuredAssociacao} />
-      <Gallery />
+       <Gallery />
       <NewsLetter />
     </>
   );
