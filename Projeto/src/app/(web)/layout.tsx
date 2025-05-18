@@ -16,8 +16,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Hotel Management App',
-  description: 'Discover the best hotel rooms',
+  title: 'My Association',
+  description: 'Software de gestão de Associativismo',
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
+    <html lang='pt'>
       <head>
         <link
           rel='stylesheet'
