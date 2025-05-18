@@ -7,7 +7,7 @@ type Props = {
   Associacao: Associacao;
 };
 
-const RoomCard: FC<Props> = props => {
+const AssociacaoCard: FC<Props> = props => {
   const {
     Associacao: { coverImage, name, price, type, description, slug, isSocio },
   } = props;
@@ -45,4 +45,4 @@ const RoomCard: FC<Props> = props => {
   );
 };
 
-export default RoomCard;
+export default AssociacaoCard;

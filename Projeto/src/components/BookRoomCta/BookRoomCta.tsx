@@ -12,7 +12,7 @@ type Props = {
   handleBookNowClick: () => void;
 };
 
-const BookRoomCta: FC<Props> = props => {
+const BookAssociacaoCta: FC<Props> = props => {
   const {
     price,
     discount,
@@ -36,7 +36,7 @@ const BookRoomCta: FC<Props> = props => {
         {discount ? (
           <span className='font-bold text-xl'>
             {' '}
-            | discount {discount}%. Now{' '}
+            | Desconto {discount}%. Now{' '}
             <span className='text-tertiary-dark'>$ {discountPrice}</span>
           </span>
         ) : (
@@ -54,7 +54,7 @@ const BookRoomCta: FC<Props> = props => {
             htmlFor='adults'
             className='block text-sm font-medium text-gray-900 dark:text-gray-400'
           >
-            Adults
+            Sócios
           </label>
           <input
             type='number'
@@ -79,4 +79,4 @@ const BookRoomCta: FC<Props> = props => {
   );
 };
 
-export default BookRoomCta;
+export default BookAssociacaoCta;

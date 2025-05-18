@@ -13,7 +13,7 @@ const associacoes = {
   fields: [
     defineField({
       name: 'name',
-      title: 'Name',
+      title: 'Nome',
       type: 'string',
       validation: Rule =>
         Rule.required().max(50).error('Maximum 50 Characters'),
@@ -28,28 +28,28 @@ const associacoes = {
     }),
     defineField({
       name: 'description',
-      title: 'Description',
+      title: 'Descrição',
       type: 'text',
       validation: Rule =>
-        Rule.required().min(100).error('Minimum 100 Characters'),
+        Rule.required().max(500).error('Máximo de 500 caracteres'),
     }),
     defineField({
       name: 'price',
-      title: 'Price',
+      title: 'Preço',
       type: 'number',
       validation: Rule =>
-        Rule.required().min(100).error('Minimum 100 Characters'),
+        Rule.required().max(100).error('Máximo de 100 caracteres'),
     }),
     defineField({
       name: 'discount',
-      title: 'Discount',
+      title: 'Disconto',
       type: 'number',
       initialValue: 0,
       validation: Rule => Rule.min(0),
     }),
     defineField({
       name: 'images',
-      title: 'Images',
+      title: 'Imagens',
       type: 'array',
       of: [
         {
@@ -61,21 +61,21 @@ const associacoes = {
         },
       ],
       validation: Rule =>
-        Rule.required().min(3).error('Minimum of 3 images required'),
+        Rule.required().min(1).error('Mínimo de 1 imagem'),
     }),
     defineField({
       name: 'coverImage',
-      title: 'Cover Image',
+      title: 'Imagem de Capa',
       type: 'object',
       fields: [
         { name: 'url', type: 'url', title: 'URL' },
         { name: 'file', type: 'file', title: 'File' },
       ],
-      validation: Rule => Rule.required().error('Cover Image is required'),
+      validation: Rule => Rule.required().error('Imagem de Capa é obrigatoria'),
     }),
     defineField({
       name: 'type',
-      title: 'Room Type',
+      title: 'Tipo de Associação',
       type: 'string',
       options: {
         list: associacaoTypes,
@@ -85,7 +85,7 @@ const associacoes = {
     }),
     defineField({
       name: 'specialNote',
-      title: 'Special Note',
+      title: 'Notas Adicionais',
       type: 'text',
       validation: Rule => Rule.required(),
       initialValue:
@@ -93,12 +93,12 @@ const associacoes = {
     }),
     defineField({
       name: 'dimension',
-      title: 'Dimension',
+      title: 'Dimensão',
       type: 'string',
     }),
     defineField({
       name: 'offeredAmenities',
-      title: 'Offered Amenities',
+      title: 'Eventos / Extras',
       type: 'array',
       of: [
         {

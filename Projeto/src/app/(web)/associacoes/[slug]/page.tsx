@@ -9,13 +9,13 @@ import { useState } from 'react';
 import axios from 'axios';
 import { getAssociacao } from '@/libs/apis';
 import LoadingSpinner from '../../loading';
-import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
-import BookRoomCta from '@/components/BookRoomCta/BookRoomCta';
+import AssociacoesPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import toast from 'react-hot-toast';
 import { getStripe } from '@/libs/stripe';
 import RoomReview from '@/components/RoomReview/RoomReview';
+import BookAssociacaoCta from '@/components/BookRoomCta/BookRoomCta';
 
-const RoomDetails = (props: { params: { slug: string } }) => {
+const AssociacaoDetails = (props: { params: { slug: string } }) => {
   const {
     params: { slug },
   } = props;
@@ -49,18 +49,18 @@ const RoomDetails = (props: { params: { slug: string } }) => {
         });
 
         if (result.error) {
-          toast.error('Payment Failed');
+          toast.error('Erro no Pagamento');
         }
       }
     } catch (error) {
       console.log('Error: ', error);
-      toast.error('An error occured');
+      toast.error('Erro inesperado');
     }
   };
 
   return (
     <div>
-      <HotelPhotoGallery photos={associacao.images} />
+      <AssociacoesPhotoGallery photos={associacao.images} />
 
       <div className='container mx-auto mt-20'>
         <div className='md:grid md:grid-cols-12 gap-10 px-3'>
@@ -140,7 +140,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
           </div>
 
           <div className='md:col-span-4 rounded-xl shadow-lg dark:shadow dark:shadow-white sticky top-10 h-fit overflow-auto'>
-            <BookRoomCta
+            <BookAssociacaoCta
               discount={associacao.discount}
               price={associacao.price}
               specialNote={associacao.specialNote}
@@ -156,4 +156,4 @@ const RoomDetails = (props: { params: { slug: string } }) => {
   );
 };
 
-export default RoomDetails;
+export default AssociacaoDetails;

@@ -6,9 +6,9 @@ import useSWR from 'swr';
 import { getAssociacoes } from '@/libs/apis';
 import { Associacao } from '@/models/associacao';
 import Search from '@/components/Search/Search';
-import RoomCard from '@/components/RoomCard/RoomCard';
+import AssociacaoCard from '@/components/RoomCard/RoomCard';
 
-const associacoes = () => {
+const Associacoes = () => {
   const [associacaoTypeFilter, setAssociacaoTypeFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const searchParams = useSearchParams();
@@ -22,7 +22,7 @@ const associacoes = () => {
   }, []);
 
   async function fetchData() {
-    return getAssociacoes();
+    return getAssociacoes(); 
   }
 
   const { data, error, isLoading } = useSWR('get/associacoes', fetchData);
@@ -68,11 +68,11 @@ const associacoes = () => {
 
       <div className='flex mt-20 justify-between flex-wrap'>
         {filteredRooms.map(Associacao => (
-          <RoomCard key={Associacao._id} Associacao={Associacao} />
+          <AssociacaoCard key={Associacao._id} Associacao={Associacao} />
         ))}
       </div>
     </div>
   );
 };
 
-export default associacoes;
+export default Associacoes;

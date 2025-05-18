@@ -5,7 +5,6 @@ import { FaSignOutAlt } from 'react-icons/fa';
 import Image from 'next/image';
 import axios from 'axios';
 import { signOut } from 'next-auth/react';
-
 import { getUserBookings } from '@/libs/apis';
 import { User } from '@/models/user';
 import LoadingSpinner from '../../loading';
@@ -26,7 +25,7 @@ const UserDetails = (props: { params: { id: string } }) => {
   const [currentNav, setCurrentNav] = useState<
     'bookings' | 'amount' | 'ratings'
   >('bookings');
-  const [roomId, setRoomId] = useState<string | null>(null);
+  const [associacaoId, setAssociacaoId] = useState<string | null>(null);
   const [isRatingVisible, setIsRatingVisible] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [ratingValue, setRatingValue] = useState<number | null>(0);
@@ -39,7 +38,7 @@ const UserDetails = (props: { params: { id: string } }) => {
       return toast.error('Please provide a rating text and a rating');
     }
 
-    if (!roomId) toast.error('Id not provided');
+    if (!associacaoId) toast.error('Id not provided');
 
     setIsSubmittingReview(true)
 
@@ -47,7 +46,7 @@ const UserDetails = (props: { params: { id: string } }) => {
       const { data } = await axios.post('/api/users', {
         reviewText: ratingText,
         ratingValue,
-        roomId,
+        associacaoId,
       });
       console.log(data);
       toast.success('Review Submitted');
@@ -57,7 +56,7 @@ const UserDetails = (props: { params: { id: string } }) => {
     } finally {
       setRatingText('');
       setRatingValue(null);
-      setRoomId(null);
+      setAssociacaoId(null);
       setIsSubmittingReview(false);
       setIsRatingVisible(false);
     }
@@ -185,7 +184,7 @@ const UserDetails = (props: { params: { id: string } }) => {
             userBookings && (
               <Table
                 bookingDetails={userBookings}
-                setRoomId={setRoomId}
+                setAssociacaoId={setAssociacaoId}
                 toggleRatingModal={toggleRatingModal}
               />
             )

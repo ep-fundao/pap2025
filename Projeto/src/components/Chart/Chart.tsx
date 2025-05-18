@@ -9,8 +9,7 @@ import {
 } from 'chart.js';
 import { FC } from 'react';
 import { Bar } from 'react-chartjs-2';
-
-import { Booking } from '@/models/associar';
+import { Associar } from '@/models/associar';
 
 ChartJS.register(Tooltip, CategoryScale, LinearScale, BarElement);
 
@@ -27,8 +26,8 @@ export const options = {
   },
 };
 
-const Chart: FC<{ userBookings: Booking[] }> = ({ userBookings }) => {
-  const labels = userBookings.map(booking => booking.hotelRoom.name);
+const Chart: FC<{ userBookings: Associar[] }> = ({ userBookings }) => {
+  const labels = userBookings.map(booking => booking.associacoes.name);
   const amountSpent = userBookings.map(booking => booking.totalPrice);
 
   return (

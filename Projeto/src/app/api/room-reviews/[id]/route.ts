@@ -1,16 +1,16 @@
-import { getRoomReviews } from '@/libs/apis';
+import { getAssociacaoReviews } from '@/libs/apis';
 import { NextResponse } from 'next/server';
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const roomId = params.id;
+  const associacaoId = params.id;
 
   try {
-    const roomReviews = await getRoomReviews(roomId);
+    const associacaoReviews = await getAssociacaoReviews(associacaoId);
 
-    return NextResponse.json(roomReviews, {
+    return NextResponse.json(associacaoReviews, {
       status: 200,
       statusText: 'Succesful',
     });

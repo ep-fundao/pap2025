@@ -14,7 +14,7 @@ const review = {
     }),
     defineField({
       name: 'associacoes',
-      title: 'Hotel Room',
+      title: 'Associações',
       type: 'reference',
       to: [{ type: 'associacoes' }],
       validation: Rule => Rule.required(),

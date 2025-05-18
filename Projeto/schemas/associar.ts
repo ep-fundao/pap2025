@@ -2,7 +2,7 @@ import { defineField } from 'sanity';
 
 const associar = {
   name: 'associar',
-  title: 'Booking',
+  title: 'Associar',
   type: 'document',
   fields: [
     defineField({
@@ -14,28 +14,28 @@ const associar = {
     }),
     defineField({
       name: 'associacoes',
-      title: 'Hotel Room',
+      title: 'Associações',
       type: 'reference',
       to: [{ type: 'associacoes' }],
       validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'discount',
-      title: 'Discount',
+      title: 'Desconto',
       type: 'number',
       initialValue: 0,
       validation: Rule => Rule.required().min(0),
     }),
     defineField({
       name: 'adults',
-      title: 'Adults',
+      title: 'Nº de Sócios',
       type: 'number',
       initialValue: 1,
       validation: Rule => Rule.required().min(1),
     }),
     defineField({
       name: 'totalPrice',
-      title: 'Total Price',
+      title: 'Preço Total',
       type: 'number',
       validation: Rule => Rule.required().min(0),
     }),

@@ -35,10 +35,10 @@ export async function getAssociacao(slug: string) {
   return result;
 }
 
-export const createBooking = async ({
+export const createSocios = async ({
   adults,
   discount,
-  Associacoes,
+  associacoes,
   totalPrice,
   user,
 }: CreateSocioDto) => {
@@ -48,7 +48,7 @@ export const createBooking = async ({
         create: {
           _type: 'booking',
           user: { _type: 'reference', _ref: user },
-          associacoes: { _type: 'reference', _ref: Associacoes },
+          associacoes: { _type: 'reference', _ref: associacoes },
           adults,
           totalPrice,
           discount,
@@ -66,7 +66,7 @@ export const createBooking = async ({
   return data;
 };
 
-export const updateHotelRoom = async (associacoesId: string) => {
+export const updateAssociacoes = async (associacoesId: string) => {
   const mutation = {
     mutations: [
       {
@@ -192,9 +192,9 @@ export const createReview = async ({
   return data;
 };
 
-export async function getRoomReviews(associacaoId: string) {
+export async function getAssociacaoReviews(associacaoId: string) {
   const result = await sanityClient.fetch<Review[]>(
-    queries.getRoomReviewsQuery,
+    queries.getAssociacaoReviewsQuery,
     {
       associacaoId,
     },

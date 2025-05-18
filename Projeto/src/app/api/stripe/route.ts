@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { authOptions } from '@/libs/auth';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { getRoom } from '@/libs/apis';
+import { getAssociacao } from '@/libs/apis';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2023-08-16',
@@ -38,7 +38,7 @@ export async function POST(req: Request, res: Response) {
   const userId = session.user.id;
 
   try {
-    const room = await getRoom(hotelRoomSlug);
+    const room = await getAssociacao(hotelRoomSlug);
     const discountPrice = room.price - (room.price / 100) * room.discount;
     const totalPrice = room.price ;
 

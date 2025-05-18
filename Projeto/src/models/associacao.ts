@@ -37,7 +37,7 @@ export type Associacao = {
 
 export type CreateSocioDto = {
   user: string;
-  Associacoes: string;
+  associacoes: string;
   adults: number;
   totalPrice: number;
   discount: number;
