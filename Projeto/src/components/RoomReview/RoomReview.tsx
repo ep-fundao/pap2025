@@ -1,34 +1,32 @@
 import axios from 'axios';
 import { FC } from 'react';
 import useSWR from 'swr';
-import { Review } from '../../models/review';
+
+import { Review } from '@/models/review';
 import Rating from '../Rating/Rating';
-const AssociacaoReview: FC<{ associacaoId: string }> = ({ associacaoId }) => {
-  const fetchAssociacaoReviews = async (url: string) => {
-    const { data } = await axios.get<Review[]>(url);
+
+const RoomReview: FC<{ associacaoId: string }> = ({ associacaoId }) => {
+  const fetchRoomReviews = async () => {
+    const { data } = await axios.get<Review[]>(`/api/room-reviews/${associacaoId}`);
     return data;
   };
 
   const {
-    data: associacaoReviews,
+    data: roomReviews,
     error,
     isLoading,
-  } = useSWR(
-    associacaoId ? `/api/associacao-reviews/${associacaoId}` : null,
-    fetchAssociacaoReviews
-  );
+  } = useSWR('/api/room-reviews', fetchRoomReviews);
 
-  if (error) {
-    console.error(error);
-    return <p className="text-red-500">Erro ao buscar avaliações.</p>;
-  }
+  if (error) throw new Error('Cannot fetch data');
+  if (typeof roomReviews === 'undefined' && !isLoading)
+    throw new Error('Cannot fetch data');
 
-  if (isLoading) return <p>Carregando avaliações...</p>;
+  console.log(roomReviews);
 
   return (
     <>
-      {associacaoReviews &&
-        associacaoReviews.map(review => (
+      {roomReviews &&
+        roomReviews.map(review => (
           <div
             className='bg-gray-100 dark:bg-gray-900 p-4 rounded-lg'
             key={review._id}
@@ -47,4 +45,4 @@ const AssociacaoReview: FC<{ associacaoId: string }> = ({ associacaoId }) => {
   );
 };
 
-export default AssociacaoReview;
+export default RoomReview;

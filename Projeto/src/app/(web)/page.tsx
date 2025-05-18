@@ -1,4 +1,4 @@
-import FeaturedRoom from '@/components/FeaturedAssociacao/FeaturedAssociacao';
+import FeaturedRoom from '@/components/FeaturedRoom/FeaturedRoom';
 import Gallery from '@/components/Gallery/Gallery';
 import HeroSection from '@/components/HeroSection/HeroSection';
 import NewsLetter from '@/components/NewsLetter/NewsLetter';
@@ -13,7 +13,7 @@ const Home = async () => {
       <HeroSection />
       <PageSearch />
       <FeaturedRoom featuredAssociacao={featuredAssociacao} />
-       <Gallery />
+      <Gallery />
       <NewsLetter />
     </>
   );

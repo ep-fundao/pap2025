@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+
 import { authOptions } from '@/libs/auth';
 import {
   checkReviewExists,
@@ -8,12 +9,11 @@ import {
   updateReview,
 } from '@/libs/apis';
 
-
-export async function GET(req: Request) {
+export async function GET(req: Request, res: Response) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return new NextResponse('Authentication Required', { status: 401 });
+    return new NextResponse('Authentication Required', { status: 500 });
   }
 
   const userId = session.user.id;
@@ -26,23 +26,23 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request, res: Response) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return new NextResponse('Authentication Required', { status: 401 });
+    return new NextResponse('Authentication Required', { status: 500 });
   }
 
-  const { associacaoId, reviewText, ratingValue } = await req.json();
+  const { roomId, reviewText, ratingValue } = await req.json();
 
-  if (!associacaoId || !reviewText || !ratingValue) {
+  if (!roomId || !reviewText || !ratingValue) {
     return new NextResponse('All fields are required', { status: 400 });
   }
 
   const userId = session.user.id;
 
   try {
-    const alreadyExists = await checkReviewExists(userId, associacaoId);
+    const alreadyExists = await checkReviewExists(userId, roomId);
 
     let data;
 
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       });
     } else {
       data = await createReview({
-        associacao: associacaoId,
+        hotelRoomId: roomId,
         reviewText,
         userId,
         userRating: ratingValue,

@@ -2,16 +2,15 @@
 
 import { Dispatch, FC, SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
-
 import { Associar } from '@/models/associar';
 
 type Props = {
-  associarDetails: Associar[];
+  bookingDetails: Associar[];
   setAssociacaoId: Dispatch<SetStateAction<string | null>>;
   toggleRatingModal: () => void;
 };
 
-const Table: FC<Props> = ({ associarDetails, setAssociacaoId, toggleRatingModal }) => {
+const Table: FC<Props> = ({ bookingDetails, setAssociacaoId, toggleRatingModal }) => {
   const router = useRouter();
 
   return (
@@ -27,27 +26,27 @@ const Table: FC<Props> = ({ associarDetails, setAssociacaoId, toggleRatingModal 
           </tr>
         </thead>
         <tbody>
-          {associarDetails.map(associar => (
+          {bookingDetails.map(booking => (
             <tr
-              key={associar._id}
+              key={booking._id}
               className='bg-white border-b hover:bg-gray-50'
             >
               <th
                 onClick={() =>
-                  router.push(`/associacoes/${associar.associacao.slug.current}`)
+                  router.push(`/associacoes/${booking.associacoes.slug.current}`)
                 }
                 className='px-6 underline text-blue-600 cursor-pointer py-4 font-medium whitespace-nowrap'
               >
-                {associar.associacao.name}
+                {booking.associacoes.name}
               </th>
-              <td className='px-6 py-4'>{associar.associacao.price}</td>
-              <td className='px-6 py-4'>{associar.totalPrice}</td>
-              <td className='px-6 py-4'>{associar.discount}</td>
+              <td className='px-6 py-4'>{booking.associacoes.price}</td>
+              <td className='px-6 py-4'>{booking.totalPrice}</td>
+              <td className='px-6 py-4'>{booking.discount}</td>
               <td className='px-6 py-4'>0</td>
               <td className='px-6 py-4'>
                 <button
                   onClick={() => {
-                    setAssociacaoId(associar.associacao._id);
+                    setAssociacaoId(booking.associacoes._id);
                     toggleRatingModal()
                   }}
                   className='font-medium text-blue-600 hover:underline'

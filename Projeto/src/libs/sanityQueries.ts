@@ -1,6 +1,6 @@
 import { groq } from 'next-sanity';
 
-export const getFeaturedAssociacaoQuery = groq`*[_type == "associacao" && isFeatured == true][0] {
+export const getFeaturedAssociacaoQuery = groq`*[_type == "associacoes" && isFeatured == true][0] {
     _id,
     description,
     discount,
@@ -9,22 +9,12 @@ export const getFeaturedAssociacaoQuery = groq`*[_type == "associacao" && isFeat
     name,
     price,
     slug,
-     coverImage {
-    asset -> {
-      _id,
-      url
-    }
-  }
+    coverImage
 }`;
 
-export const getAssociacaoQuery = groq`*[_type == "associacao"] {
+export const getAssociacoesQuery = groq`*[_type == "associacoes"] {
     _id, 
-    coverImage {
-    asset -> {
-      _id,
-      url
-    }
-  },
+    coverImage,
     description,
     dimension,
     isSocio,
@@ -35,14 +25,9 @@ export const getAssociacaoQuery = groq`*[_type == "associacao"] {
     type
 }`;
 
-export const getAssociacao = groq`*[_type == "associacao" && slug.current == $slug][0] {
+export const getAssociacao = groq`*[_type == "associacoes" && slug.current == $slug][0] {
     _id,
-     coverImage {
-    asset -> {
-      _id,
-      url
-    }
-  },
+    coverImage,
     description,
     dimension,
     discount,
@@ -57,16 +42,15 @@ export const getAssociacao = groq`*[_type == "associacao" && slug.current == $sl
     type
 }`;
 
-export const getUserSociosQuery = groq`*[_type == 'socios' && user._ref == $userId] {
+export const getUserBookingsQuery = groq`*[_type == 'booking' && user._ref == $userId] {
     _id,
-    associacao -> {
+    associacoes -> {
         _id,
         name,
         slug,
         price
     },
     adults,
-    isAnual,
     totalPrice,
     discount
 }`;
@@ -81,7 +65,7 @@ export const getUserDataQuery = groq`*[_type == 'user' && _id == $userId][0] {
     image,
 }`;
 
-export const getAssociacaoReviewsQuery = groq`*[_type == "review" && associacao._ref == $associacaoId] {
+export const getAssociacaoReviewsQuery = groq`*[_type == "review" && associacoes._ref == $associacaoId] {
     _createdAt,
     _id,
     text,

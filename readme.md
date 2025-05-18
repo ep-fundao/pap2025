@@ -21,8 +21,6 @@ Logo, este Projeto é uma aplicação para a divulgação de Associações, com 
 **Libs:** Stripe,Sanity <br/>
 
 
-
-
 ## Autores
 
 - [@Guttojss](https://www.github.com/Guttojss)

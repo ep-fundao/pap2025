@@ -1,14 +1,14 @@
 import { defineField } from 'sanity';
 
 const associacaoTypes = [
-  { title: 'culturais', value: 'culturais' },
-  { title: 'desportivas', value: 'desportivas' },
+  { title: 'cultural', value: 'cultural' },
+  { title: 'desportiva', value: 'desportiva' },
   { title: 'outras', value: 'outras' },
 ];
 
 const associacoes = {
   name: 'associacoes',
-  title: 'associacoes',
+  title: 'Associações',
   type: 'document',
   fields: [
     defineField({
@@ -81,7 +81,7 @@ const associacoes = {
         list: associacaoTypes,
       },
       validation: Rule => Rule.required(),
-      initialValue: 'basic',
+      initialValue: 'outras',
     }),
     defineField({
       name: 'specialNote',
@@ -89,7 +89,7 @@ const associacoes = {
       type: 'text',
       validation: Rule => Rule.required(),
       initialValue:
-        'Check-in time is 12:00 PM, checkout time is 11:59 AM. If you leave behind any items, please contact the receptionist.',
+        '...',
     }),
     defineField({
       name: 'dimension',
@@ -112,7 +112,7 @@ const associacoes = {
     }),
     defineField({
       name: 'isSocio',
-      title: 'Is Booked',
+      title: 'Is Socio',
       type: 'boolean',
       initialValue: false,
     }),

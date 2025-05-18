@@ -1,9 +1,9 @@
 import account from './account';
+import associar from './associar';
+import associacoes from './associacoes';
 import review from './review';
 import user from './user';
 import verificationToken from './verificationToken';
-import associacoes from './associacoes';
-import associar from './associar';
 
 export const schemaTypes = [
   user,

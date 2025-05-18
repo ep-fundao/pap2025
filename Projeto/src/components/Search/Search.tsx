@@ -18,7 +18,7 @@ const Search: FC<Props> = ({
 }) => {
   const router = useRouter();
 
-  const handleAssociacaoTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const handleRoomTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setAssociacaoTypeFilter(event.target.value);
   };
 
@@ -27,7 +27,7 @@ const Search: FC<Props> = ({
   };
 
   const handleFilterClick = () => {
-    router.push(`/Associacoes?associacaoType=${associacaoTypeFilter}&searchQuery=${searchQuery}`);
+    router.push(`/associacoes?associacaoType=${associacaoTypeFilter}&searchQuery=${searchQuery}`);
   };
 
   return (
@@ -35,25 +35,25 @@ const Search: FC<Props> = ({
       <div className='container mx-auto flex gap-4 flex-wrap justify-between items-center'>
         <div className='w-full md:1/3 lg:w-auto mb-4 md:mb-0'>
           <label className='block text-sm font-medium mb-2 text-black'>
-            Tipo de associação
+            Tipo de Associação
           </label>
           <div className='relative'>
             <select
               value={associacaoTypeFilter}
-              onChange={handleAssociacaoTypeChange}
+              onChange={handleRoomTypeChange}
               className='w-full px-4 py-2 capitalize rounded leading-tight dark:bg-black focus:outline-none'
             >
               <option value='All'>Todas</option>
-              <option value='Culturais'>Culturais</option>
-              <option value='Desportivos'>Desportivos</option>
-              <option value='Outras'>Outras</option>
+              <option value='culturais'>Culturais</option>
+              <option value='desportivas'>Desportivas</option>
+              <option value='outras'>Outras</option>
             </select>
           </div>
         </div>
 
         <div className='w-full md:1/3 lg:w-auto mb-4 md:mb-0'>
           <label className='block text-sm font-medium mb-2 text-black'>
-            pesquisa
+            Pesquise
           </label>
           <input
             type='search'
@@ -70,7 +70,7 @@ const Search: FC<Props> = ({
           type='button'
           onClick={handleFilterClick}
         >
-          Pesquisa
+          Pesquise
         </button>
       </div>
     </section>

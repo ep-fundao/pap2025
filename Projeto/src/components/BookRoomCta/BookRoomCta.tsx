@@ -1,7 +1,6 @@
 'use client';
 
 import { Dispatch, FC, SetStateAction } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
 
 type Props = {
   setAdults: Dispatch<SetStateAction<number>>;
@@ -13,7 +12,7 @@ type Props = {
   handleBookNowClick: () => void;
 };
 
-const BookAssociacaoCta: FC<Props> = props => {
+const BookRoomCta: FC<Props> = props => {
   const {
     price,
     discount,
@@ -25,7 +24,6 @@ const BookAssociacaoCta: FC<Props> = props => {
   } = props;
 
   const discountPrice = price - (price / 100) * discount;
-
 
   return (
     <div className='px-7 py-6'>
@@ -56,7 +54,7 @@ const BookAssociacaoCta: FC<Props> = props => {
             htmlFor='adults'
             className='block text-sm font-medium text-gray-900 dark:text-gray-400'
           >
-            Sócios
+            Adults
           </label>
           <input
             type='number'
@@ -67,19 +65,18 @@ const BookAssociacaoCta: FC<Props> = props => {
             max={5}
             className='w-full border border-gray-300 rounded-lg p-2.5'
           />
-        </div>
+        </div>      
       </div>
-
 
       <button
         disabled={isSocio}
         onClick={handleBookNowClick}
         className='btn-primary w-full mt-6 disabled:bg-gray-500 disabled:cursor-not-allowed'
       >
-        {isSocio ? 'Sócio' : 'Associe-se!'}
+        {isSocio ? 'Sócio' : 'Associe-se'}
       </button>
     </div>
   );
 };
 
-export default BookAssociacaoCta;
+export default BookRoomCta;

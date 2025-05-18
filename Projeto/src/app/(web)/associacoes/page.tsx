@@ -3,43 +3,50 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import Search from '@/components/Search/Search';
 import { getAssociacoes } from '@/libs/apis';
 import { Associacao } from '@/models/associacao';
-import AssociacaoCard from '@/components/AssociacaoCard/AssociacaoCard';
+import Search from '@/components/Search/Search';
+import RoomCard from '@/components/RoomCard/RoomCard';
 
-const Associacoes = () => {
-  const [associacaoTypeFilter, setTypeAssociacaoFilter] = useState('');
+const associacoes = () => {
+  const [associacaoTypeFilter, setAssociacaoTypeFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const searchQuery = searchParams.get('searchQuery');
-    const typeAssociacoes = searchParams.get('typeAssociacao');
+    const associacaoType = searchParams.get('associacaoType');
 
-    if (typeAssociacoes) setTypeAssociacaoFilter(typeAssociacoes);
+    if (associacaoType) setAssociacaoTypeFilter(associacaoType);
     if (searchQuery) setSearchQuery(searchQuery);
   }, []);
 
-  const { data, error, isLoading } = useSWR('get/associaoes', getAssociacoes);
+  async function fetchData() {
+    return getAssociacoes();
+  }
+
+  const { data, error, isLoading } = useSWR('get/associacoes', fetchData);
 
   if (error) throw new Error('Cannot fetch data');
   if (typeof data === 'undefined' && !isLoading)
     throw new Error('Cannot fetch data');
 
-  const filterAssociacao = (associacoes: Associacao[]) => {
-    return associacoes.filter((assoc: Associacao) => {
+  const filterRooms = (associacoes: Associacao[]) => {
+    return associacoes.filter(associacao => {
+      // Apply room type filter
+
       if (
         associacaoTypeFilter &&
         associacaoTypeFilter.toLowerCase() !== 'all' &&
-        assoc.type.toLowerCase() !== associacaoTypeFilter.toLowerCase()
+        associacao.type.toLowerCase() !== associacaoTypeFilter.toLowerCase()
       ) {
         return false;
       }
 
+      //   Apply search query filter
       if (
         searchQuery &&
-        !assoc.name.toLowerCase().includes(searchQuery.toLowerCase())
+        !associacao.name.toLowerCase().includes(searchQuery.toLowerCase())
       ) {
         return false;
       }
@@ -48,24 +55,24 @@ const Associacoes = () => {
     });
   };
 
-  const filteredAssociacao = filterAssociacao(data || []);
+  const filteredRooms = filterRooms(data || []);
 
   return (
     <div className='container mx-auto pt-10'>
-      <Search 
+      <Search
         associacaoTypeFilter={associacaoTypeFilter}
-        searchQuery={searchQuery}        
-        setAssociacaoTypeFilter={setTypeAssociacaoFilter}
+        searchQuery={searchQuery}
+        setAssociacaoTypeFilter={setAssociacaoTypeFilter}
         setSearchQuery={setSearchQuery}
       />
 
       <div className='flex mt-20 justify-between flex-wrap'>
-        {filteredAssociacao.map(assoc => (
-            <AssociacaoCard key={assoc._id} associacao={assoc} />
+        {filteredRooms.map(Associacao => (
+          <RoomCard key={Associacao._id} Associacao={Associacao} />
         ))}
       </div>
     </div>
   );
 };
 
-export default Associacoes;
+export default associacoes;

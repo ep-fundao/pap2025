@@ -1,84 +1,81 @@
-import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createSocio, updateAssociacao } from '@/libs/apis';
+
+import { authOptions } from '@/libs/auth';
+import { getServerSession } from 'next-auth';
+import { NextResponse } from 'next/server';
+import { getRoom } from '@/libs/apis';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2023-08-16',
 });
 
-const checkoutSessionCompleted = 'checkout.session.completed';
-
-// Tipagem opcional para metadata (Stripe armazena tudo como string)
-type CheckoutMetadata = {
-  adults: string;
-  associacao: string;
-  user: string;
-  discount: string;
-  totalPrice: string;
-  isAnual: string;
+type RequestData = {
+  adults: number;
+  hotelRoomSlug: string;
 };
 
-export async function POST(req: Request) {
-  const reqBody = await req.text();
-  const sig = req.headers.get('stripe-signature');
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+export async function POST(req: Request, res: Response) {
+  const {
+    adults,
+    hotelRoomSlug,
+  }: RequestData = await req.json();
 
-  if (!sig || !webhookSecret) {
-    return new NextResponse('Missing Stripe signature or webhook secret', {
-      status: 400,
-    });
+  if (
+    !adults ||
+    !hotelRoomSlug
+  ) {
+    return new NextResponse('Please all fields are required', { status: 400 });
   }
 
-  let event: Stripe.Event;
+  const origin = req.headers.get('origin');
+
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return new NextResponse('Authentication required', { status: 400 });
+  }
+
+  const userId = session.user.id;
 
   try {
-    event = stripe.webhooks.constructEvent(reqBody, sig, webhookSecret);
+    const room = await getRoom(hotelRoomSlug);
+    const discountPrice = room.price - (room.price / 100) * room.discount;
+    const totalPrice = room.price ;
+
+    // Create a stripe payment
+    const stripeSession = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: room.name,
+              images: room.images.map(image => image.url),
+            },
+            unit_amount: parseInt((totalPrice * 100).toString()),
+          },
+        },
+      ],
+      payment_method_types: ['card'],
+      success_url: `${origin}/users/${userId}`,
+      metadata: {
+        adults,
+        hotelRoom: room._id,
+
+        user: userId,
+        discount: room.discount,
+        totalPrice
+      }
+    });
+
+    return NextResponse.json(stripeSession, {
+      status: 200,
+      statusText: 'Payment session created',
+    });
   } catch (error: any) {
-    console.error('Webhook verification failed:', error.message);
-    return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
-  }
-
-  switch (event.type) {
-    case checkoutSessionCompleted: {
-      const session = event.data.object as Stripe.Checkout.Session;
-
-      const metadata = session.metadata as CheckoutMetadata | null;
-
-      if (!metadata) {
-        return new NextResponse('Missing metadata in session', { status: 400 });
-      }
-
-      const { adults, associacao, user, discount, totalPrice, isAnual } = metadata;
-
-      try {
-        // Cria novo sócio
-        await createSocio({
-          adults: Number(adults),
-          associacao,
-          discount: Number(discount),
-          totalPrice: Number(totalPrice),
-          user,
-          isAnual: isAnual === 'true',
-        });
-
-        // Atualiza associação
-        await updateAssociacao(associacao);
-
-        return NextResponse.json('Booking successful', {
-          status: 200,
-          statusText: 'Booking Successful',
-        });
-      } catch (err: any) {
-        console.error('Error processing booking:', err.message);
-        return new NextResponse('Server error during booking', { status: 500 });
-      }
-    }
-
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-      return NextResponse.json('Event received', {
-        status: 200,
-        statusText: 'Event Received',
-      });
+    console.log('Payment falied', error);
+    return new NextResponse(error, { status: 500 });
   }
 }
