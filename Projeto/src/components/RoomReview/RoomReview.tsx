@@ -21,8 +21,6 @@ const RoomReview: FC<{ associacaoId: string }> = ({ associacaoId }) => {
   if (typeof roomReviews === 'undefined' && !isLoading)
     throw new Error('Cannot fetch data');
 
-  console.log(roomReviews);
-
   return (
     <>
       {roomReviews &&

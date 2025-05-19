@@ -127,15 +127,6 @@ const AssociacaoDetails = (props: { params: { slug: string } }) => {
                   </div>
                 </div>
               </div>
-
-              <div className='shadow dark:shadow-white rounded-lg p-6'>
-                <div className='items-center mb-4'>
-                  <p className='md:text-lg font-semibold'>Opinioes de Clientes</p>
-                </div>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <RoomReview associacaoId={associacao._id} />
-                </div>
-              </div>
             </div>
           </div>
 
@@ -157,3 +148,15 @@ const AssociacaoDetails = (props: { params: { slug: string } }) => {
 };
 
 export default AssociacaoDetails;
+
+/*
+
+<div className='shadow dark:shadow-white rounded-lg p-6'>
+                <div className='items-center mb-4'>
+                  <p className='md:text-lg font-semibold'>Opinioes de Clientes</p>
+                </div>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <RoomReview associacaoId={associacao._id} />
+                </div>
+              </div>
+              */

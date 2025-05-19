@@ -9,8 +9,10 @@ type Props = {
   featuredAssociacao: Associacao;
 };
 
- const FeaturedAssociacao: FC<Props> = props => {
-  const { featuredAssociacao } = props;
+  const FeaturedAssociacao: FC<Props> = ({ featuredAssociacao }) => {
+  if (!featuredAssociacao || !featuredAssociacao.coverImage || !featuredAssociacao.coverImage.url) {
+    return null; 
+  }
 
   return (
     <section className='flex md:flex-row flex-col px-4 py-10 items-center gap-12 container mx-auto'>
