@@ -20,7 +20,6 @@ Logo, este Projeto é uma aplicação para a divulgação de Associações, com 
 **Back-end:** Next.js   <br/>
 **Libs:** Stripe,Sanity <br/>
 
-
 ## Autores
 
 - [@Guttojss](https://www.github.com/Guttojss)
