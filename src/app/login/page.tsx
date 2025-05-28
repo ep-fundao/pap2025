@@ -22,29 +22,36 @@ export default function LoginPage() {
     type: string
   }
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
+ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  setIsLoading(true)
 
-    // Simular login
-    setTimeout(() => {
-      const userName = email.split("@")[0]
-      const formattedName = userName
-        .split(".")
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(" ")
+  try {
+    const response = await fetch("/api/registar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
 
-      const user: User = {
-        name: formattedName,
-        email: email,
-        type: "cuidador",
-      }
+    if (!response.ok) {
+      throw new Error("Credenciais inválidas")
+    }
 
-      localStorage.setItem("clicktocare_user", JSON.stringify(user))
-      setIsLoading(false)
-      window.location.href = "/dashboard"
-    }, 1500)
+    const data = await response.json()
+
+    // Aqui podes guardar o token se for necessário
+    // Exemplo: document.cookie = `token=${data.token}`
+
+    // Redirecionar após login bem-sucedido
+    window.location.href = "/dashboard"
+  } catch (error: any) {
+    alert(error.message || "Erro ao fazer login. Tente novamente.")
+  } finally {
+    setIsLoading(false)
   }
+}
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-pink-50/50 to-white">
